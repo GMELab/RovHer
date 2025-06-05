@@ -60,7 +60,7 @@ R packages data.table and tidyverse (latest versions).
    git clone https://github.com/Keonapang/RovHer.git
    cd RovHer
    ```
-2. Download `All_RovHer_Scores.txt.gz` from Zenodo (*link available soon*) and place it in the same directory as this script.
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and place it in the same directory as this script.
 
 3. Run script to obtain RovHer scores in two ways:
 
@@ -100,7 +100,7 @@ For **option B**, specify gene(s) in all capital letters:
 
 # Resources
 
-RovHer scores for all 4,927,152 rare variants analyzed in this study from the UK Biobank, as well as pre-computed scores for 79,971,228 possible autosomal rare variants in humans, will be made publicly available for download on Zenodo upon publication. 
+RovHer scores for all 4,927,152 rare variants analyzed in this study from the UK Biobank, as well as pre-computed scores for 79,971,228 possible autosomal rare variants in humans, will be made publicly available for download on [Zenodo](https://zenodo.org/records/15596103?preview=1) upon publication. 
 
 A separate set of 79,971,228 scores, trained without prediction features subject to commercial licensing restrictions, will also be provided.
 
