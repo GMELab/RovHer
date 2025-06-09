@@ -18,7 +18,7 @@ suppressMessages(library(tidyverse))
 setDTthreads(threads = 15)
 
 args <- commandArgs(trailingOnly = TRUE)
-DIR_OUT <- args[1] # DIR_OUT="/mnt/nfs/rigenenfs/shared_resources/biobanks/UKBIOBANK/pangk/RovHer/Demo"
+DIR_OUT <- args[1] 
 GENE <- args[2] # GENE="LDLR APOB BRCA1"
 
 if (length(args) < 2) {
