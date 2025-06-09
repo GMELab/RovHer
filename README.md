@@ -61,7 +61,7 @@ R packages data.table and tidyverse (latest versions).
    git clone https://github.com/Keonapang/RovHer.git
    cd RovHer
    ```
-2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to this local `/RovHer` directory.
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`.
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
 3. Run script to obtain RovHer scores in two ways:
