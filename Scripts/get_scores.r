@@ -11,9 +11,11 @@
 if (!requireNamespace("data.table", quietly = TRUE)) {
   install.packages("data.table")
 }
+install.packages('R.utils')
 
 cat("\n")
 library(data.table)
+suppressMessages(library(R.utils))
 setDTthreads(threads = 15)
 
 args <- commandArgs(trailingOnly = TRUE)
