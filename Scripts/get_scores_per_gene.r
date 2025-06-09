@@ -8,13 +8,9 @@
 if (!requireNamespace("data.table", quietly = TRUE)) {
   install.packages("data.table")
 }
-if (!requireNamespace("tidyverse", quietly = TRUE)) {
-  install.packages("tidyverse")
-}
 cat("\n")
 
 suppressMessages(library(data.table))
-suppressMessages(library(tidyverse))
 setDTthreads(threads = 15)
 
 args <- commandArgs(trailingOnly = TRUE)
