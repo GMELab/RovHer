@@ -4,12 +4,14 @@
 
 # For a given protein-coding gene, retrieve all rare variants with RovHer scores
 ################################################
+cat("\n")
 
 if (!requireNamespace("data.table", quietly = TRUE)) {
   install.packages("data.table")
 }
-cat("\n")
+install.packages('R.utils')
 
+suppressMessages(library(R.utils))
 suppressMessages(library(data.table))
 setDTthreads(threads = 15)
 
