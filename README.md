@@ -45,9 +45,10 @@ Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk
 RovHer can generate predictions on major operating systems, including GNU/Linux, macOS, and Windows. For biobank-scale analyses, we recommend Unix-based hardware with a minimum of 100GB RAM.
 
 ### Software dependencies
-R package data.table (latest versions).
+R package data.table and R.utils (latest versions).
   ```R
   install.packages("data.table")
+  install.packages("R.utils")
   ```
 <!-- Usage: Retrieve pre-computed scores -->
 # Usage: Retrieve pre-computed scores 
