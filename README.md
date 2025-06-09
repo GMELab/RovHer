@@ -1,4 +1,5 @@
 # RovHer: heritability-optimized scores for the functional prioritization of rare missense variants
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
 <!-- TABLE OF CONTENTS -->
 <a name="readme-top"></a>
@@ -61,6 +62,7 @@ R packages data.table and tidyverse (latest versions).
    cd RovHer
    ```
 2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and place it in the same directory as this script.
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
 3. Run script to obtain RovHer scores in two ways:
 
