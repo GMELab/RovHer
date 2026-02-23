@@ -34,11 +34,11 @@ The raw outputs of RovHer therefore reflects the predicted FDR of each variant. 
 
 
 **Performance**:
-* prioritizes RVs that explain the largest proportion of genome-wide phenotypic variance, which are variants that more likely functional and disease-relevant [3]
+* prioritizes missense RVs that explain the greatest proportion of genome-wide trait variance, which are variants that more likely functional [3]
 
 **Usage**:
 * scores are trait-agnostic (i.e. not tied to a specific disease or phenotype)
-* RovHer scores were generated for all RVs; however, they are optimized for missense variants, which demonstrates significant enrichment in RV heritability across 21 traits tested in the UK Biobank.
+* RovHer scores were generated for all possible rare SNVs deposited in the dbNSFP database; however, they are optimized for missense variants, which demonstrates significant enrichment in RV heritability across 21 traits tested in the UK Biobank.
 
 ![Workflow Overview](RovHer%20workflow.png)
 *An overview of the development and application of RovHer.*
