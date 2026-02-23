@@ -100,11 +100,6 @@ For **option B**, no input file is required. Simply specify a list of gene(s) in
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-The expected output file from **option A** or **option B** is:
-
-| PLINK_SNP_NAME  | Gene  |  RovHer_score|
-| 1:65565:A:C   |  OR4F5  | 0.147332859420305|
-
 
 <!-- Resources -->
 
