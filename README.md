@@ -103,7 +103,7 @@ For **option B**, no input file is required. Simply specify a list of gene(s) in
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-The runtime for these scripts should range from a few seconds up to a few minutes (depending on input variant file size) on a "normal" computer. 
+The runtime for these scripts ranges from a few seconds up to a few minutes (depending on input variant file size) on a "normal" computer. 
 
 <!-- Resources -->
 
