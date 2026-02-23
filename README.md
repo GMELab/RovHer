@@ -53,7 +53,7 @@ R package data.table and R.utils (latest versions).
 <!-- Usage: Retrieve pre-computed scores -->
 # Usage: Retrieve pre-computed scores 
 
-1. Clone the repo into your working directory
+1. Clone the repo into your working directory. This step should take only a few seconds on any computer.
    ```sh
    mydir="/my/working/dir" # modify 
    cd $mydir
@@ -61,7 +61,7 @@ R package data.table and R.utils (latest versions).
    git clone https://github.com/Keonapang/RovHer.git
    cd RovHer
    ```
-2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`.
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`. This step should take several minutes.
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
 3. Run script to obtain RovHer scores in two ways:
@@ -88,6 +88,7 @@ For **option A**, the required input is a single text file `variants.txt` consis
 For **option B**, specify gene(s) in all capital letters:
   ```sh
     DIR_OUT="$mydir/RovHer/Demo" # output directory 
+
     GENE="LDLR BRCA1 APOB" # example of a gene set  
     # or
     GENE="LDLR" # example of one gene 
