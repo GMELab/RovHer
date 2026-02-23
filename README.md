@@ -64,10 +64,10 @@ R package data.table and R.utils (latest versions).
    git clone https://github.com/Keonapang/RovHer.git
    cd RovHer
    ```
-2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`. This step should take several minutes.
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`. This step should take up to several minutes.
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
-3. Run script to obtain RovHer scores in two ways:
+3. Run automated scripts to obtain a subset of RovHer scores for downstream analyses in two ways:
 
 | Option | Description | Output | Script name |
 |--:|-----------|-----------|-----------|
@@ -103,6 +103,7 @@ For **option B**, no input file is required. Simply specify a list of gene(s) in
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+The runtime for these scripts should range from a few seconds up to a few minutes (depending on input variant file size) on a "normal" computer. 
 
 <!-- Resources -->
 
