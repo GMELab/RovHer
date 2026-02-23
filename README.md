@@ -48,11 +48,13 @@ The raw outputs of RovHer therefore reflects the predicted FDR of each variant. 
 RovHer can generate predictions on major operating systems, including GNU/Linux, macOS, and Windows. For biobank-scale analyses, we recommend Unix-based hardware with a minimum of 100GB RAM.
 
 ### Software dependencies
-R package data.table and R.utils (latest versions).
+
+The package development version is tested on Linux operating systems. However, the CRAN packages required should be compatible with Windows, Mac, and Linux operating systems. Please ensure that both data.table and R.utils are installed. To get the latest versions on CRAN, type the following in a `R` session:
   ```R
   install.packages("data.table")
   install.packages("R.utils")
   ```
+
 <!-- Usage: Retrieve pre-computed scores -->
 # Usage: Retrieve pre-computed scores 
 
@@ -103,7 +105,7 @@ For **option B**, no input file is required. Simply specify a list of gene(s) in
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-The runtime for these scripts ranges from a few seconds up to a few minutes (depending on input variant file size) on a "normal" computer. 
+The runtime for these scripts ranges from a few seconds up to a few minutes (depending on input variant file size) on a desktop computer (RAM: 16+ GB, CPU: 4+ cores, 3.3+ GHz/core).
 
 <!-- Resources -->
 
