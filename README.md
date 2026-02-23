@@ -72,7 +72,7 @@ R package data.table and R.utils (latest versions).
 |  B| For a given protein-coding `gene` or set of genes, retrieve a list of scored RVs | A `output_gene.txt` or `output_geneset.txt` with tab-delimited columns: PLINK_SNP_NAME, Gene, RovHer_score | `get_scores_per_gene.r` |
 
 
-For **option A**, the required input is a single text file `variants.txt` consisting of a column of PLINK IDs (no headers). Variants do not have to be sorted. For example '$INFILE' may look like:
+For **option A**, the required input is a single text file `variants.txt` consisting of a column of PLINK IDs (no headers). Variants do not have to be sorted. For example `$INFILE` may look like:
 |             |
 |-------------|
 |  1:10030:A:T| 
