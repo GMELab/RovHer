@@ -28,7 +28,10 @@
 <!-- ABOUT -->
 ## About
 
-Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a significant challenge. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs based on their probability of functional effect. RovHer employs the [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N=394,841) exome-wide association study (ExWAS) summary statistics of height, which serves as the training trait. The dependent variable for training is the per-variant **false discovery rate**, a surrogate measure for the likelihood of variant functionality.
+Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a significant challenge. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs based on their probability of functional effect. RovHer employs the [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N=394,841) exome-wide association study (ExWAS) summary statistics of height, which serves as the training trait. For the dependent variable, we used the **false discovery rate** across 4,927,152 RVs as a surrogate measure for the likelihood of variant functionality.
+
+The raw outputs of RovHer therefore reflects the predicted FDR of each variant. We subsequently inverted them to obtain a "true positive" scale, where higher RovHer scores (closer to 1) represent a greater probability of a variant being functional, and lower scores (closer to 0) represent likely neutral variants.
+
 
 **Performance**:
 * prioritizes RVs that explain the largest proportion of genome-wide phenotypic variance, which are variants that more likely functional and disease-relevant [3]
