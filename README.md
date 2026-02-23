@@ -71,6 +71,7 @@ R package data.table and R.utils (latest versions).
 |  A| Retrieve scores for a list of RVs in `variants.txt` | A `output_variants.txt` with tab-delimited columns: PLINK_SNP_NAME, Gene, RovHer_score | `get_scores.r` |
 |  B| For a given protein-coding `gene` or set of genes, retrieve a list of scored RVs | A `output_gene.txt` or `output_geneset.txt` with tab-delimited columns: PLINK_SNP_NAME, Gene, RovHer_score | `get_scores_per_gene.r` |
 
+
 For **option A**, the required input is a single text file `variants.txt` consisting of a column of PLINK IDs (no headers). Variants do not have to be sorted. For example:
 |             |
 |-------------|
@@ -85,7 +86,7 @@ For **option A**, the required input is a single text file `variants.txt` consis
     Rscript Scripts/get_scores.r $INFILE $DIR_OUT
   ```
 
-For **option B**, specify gene(s) in all capital letters:
+For **option B**, no input file is required. Simply specify a list of gene(s) in all capital letters:
   ```sh
     DIR_OUT="$mydir/RovHer/Demo" # output directory 
 
@@ -98,6 +99,12 @@ For **option B**, specify gene(s) in all capital letters:
   ``` 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+The expected output file from **option A** or **option B** is:
+
+| PLINK_SNP_NAME  | Gene  |  RovHer_score|
+| 1:65565:A:C   |  OR4F5  | 0.147332859420305|
+
 
 <!-- Resources -->
 
