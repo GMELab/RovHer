@@ -139,36 +139,7 @@ Given a ranked list of variants (e.g. prioritized by the RovHer annotation score
  
 By running the pipeline on different **variant subsets** (as defined by variable `prop_blks` below), for example the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. RARity is both as a standalone RV heritability estimator and as an **evaluation metric for variant-prioritization methods** (i.e. does ranking variants by a given score concentrate heritability at the top?). 
 
-## Upstream requirements
-
-The pipeline assumes the following have already been produced (not included in this repo):
-
-1. **Genotype matrices** per chromosome, saved as `.RData` files each containing a
-   single object named `GENE_DF` — a table with an `IID`/`eid` column plus one column
-   per variant. Variant IDs are in `chr:pos:ref:alt` (or `chr_pos_ref_alt`) format.
-2. **A clumped variant list** (LD-pruned index variants), typically from PLINK
-   `--clump`, split into **per-proportion files** by the upstream `1_split_prop_blk.r`
-   step. Step 2 expects files named `<base>_top<top>.clumped`.
-3. **A phenotype table** (`pheno_file`): first column `eid`, second column the trait.
-4. **A covariate/PC table** (`PC_file`): `eid`, `AGE`, `SEX`, `PC1`…`PC20`.
-
 ---
-
-## Directory structure
-
-All outputs are written under `<DIR_WORK>/h2_result/top<top>/`:
-
-```
-<DIR_WORK>/h2_result/
-└── top<top>/
-    ├── 2_GENO_RDATA/                    # Step 2: filtered genotype blocks
-    ├── 3_GENO_aligned_<trait>/          # Step 3: processed, aligned genotype blocks
-    ├── 3_PHENO_aligned_<trait>/         # Step 3: processed phenotype (norm_df)
-    └── 4_<trait>_H2_RESULTS/            # Step 4: heritability results
-        ├── <trait>_H2_exome_raw.txt            # per-block raw R² (intermediate)
-        ├── <trait>_H2_exome_raw_processed.txt  # per-block, with CIs/variances
-        └── TOTAL_H2_<trait>_exome.txt          # ← final trait-level heritability
-```
 
 ## Run 
 
@@ -183,11 +154,13 @@ Variables:
 * `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
 
 Input files:
-* `input_file` is the path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt); no column header
-* `score_file` is the path to the annotation score file. To get RovHer's score file, see: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
-* `GENOTYPE_DIR` is a directory of per-chromosome genotype matrices for these LD-independent variants (first column IID)
-* `pheno_file` is the path to the participant phenotype file (first column IID, second column `trait`)
-* `PC_file` is the path to the participant first 20 genetic principle components
+* `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically from PLINK
+   `--clump` function; no column header
+* `score_file` path to the master annotation file. Retrieve pre-computed RovHer annotations from: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
+* `GENOTYPE_DIR` directory containing per-chromosome genotype matrices for these LD-independent variants saved as `.RData` files each containing a
+   single object named `GENE_DF`. Here, variant IDs are in `chr:pos:ref:alt_alt` format.
+* `pheno_file` path to a participant trait file (first column IID, second column is the `trait`)
+* `PC_file` path to the first 20 genetic principle components for each participant (columns: `eid`, `AGE`, `SEX`, `PC1`…`PC20`)
   
 ```bash
 
@@ -213,8 +186,8 @@ pheno_file="${DIR_WORK}/sample/pheno_file.txt"
 PC_file="${DIR_WORK}/sample/PCs_1_20.txt"
 
 ### Run
-Rscript "${DIR_WORK}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
 
+Rscript "${DIR_WORK}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
 Rscript "${DIR_WORK}/2_build_geno_blks.r" $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
 
 for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
@@ -239,6 +212,23 @@ The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per ru
 | `STD2` | Aggregated standard deviation (√ of summed block variances) |
 | `LCL_adj` | Lower 95% CI bound (`ADJ_R2 − 1.96 × STD2`) |
 | `UCL_adj` | Upper 95% CI bound (`ADJ_R2 + 1.96 × STD2`) |
+
+
+## Directory structure
+
+All outputs are written under `<DIR_WORK>/h2_result/top<top>/`:
+
+```
+<DIR_WORK>/h2_result/
+└── top<top>/
+    ├── 2_GENO_RDATA/                    # Step 2: filtered genotype blocks
+    ├── 3_GENO_aligned_<trait>/          # Step 3: processed, aligned genotype blocks
+    ├── 3_PHENO_aligned_<trait>/         # Step 3: processed phenotype (norm_df)
+    └── 4_<trait>_H2_RESULTS/            # Step 4: heritability results
+        ├── <trait>_H2_exome_raw.txt            # per-block raw R² (intermediate)
+        ├── <trait>_H2_exome_raw_processed.txt  # per-block, with CIs/variances
+        └── TOTAL_H2_<trait>_exome.txt          # ← final trait-level heritability
+```
 
 ### Assess heritability enrichment
 
