@@ -225,11 +225,9 @@ The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per ru
 | `LCL_adj` | Lower 95% CI bound (`ADJ_R2 − 1.96 × STD2`) |
 | `UCL_adj` | Upper 95% CI bound (`ADJ_R2 + 1.96 × STD2`) |
 
+### Assess heritability enrichment
 
-**Heritability enrichment.** To assess a prioritization method, run the pipeline for
-several proportion bins (e.g. `top1`, `top5`, `top100`) and compare `ADJ_R2`. If a
-small top bin captures a large share of the `top100` heritability, the ranking
-concentrates heritability among its highest-scored variants.
+To assess a prioritization method, run the pipeline for several proportion bins (e.g. `top1`, `top5`, `top100`) and compare `ADJ_R2`. If a small top bin captures a large share of the `top100` heritability, the ranking concentrates heritability among its highest-scored variants.
 
 ---
 
