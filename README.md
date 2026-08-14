@@ -170,42 +170,56 @@ All outputs are written under `<DIR_WORK>/h2_result/top<top>/`:
         └── TOTAL_H2_<trait>_exome.txt          # ← final trait-level heritability
 ```
 
-Here `<top>` is the proportion bin (e.g. `1` for top 1% of RVs, or `100` for all RVs) and
-`<trait>` is the trait name (e.g. `LDL_direct`).
+## Run 
 
+Directory:
+`DIR_WORK` is the complete path of repository 
 
+Variables:
+* `anno_name`
+* `prop_blks` is a list of proportion bins (e.g. `1` for top 1% of RVs, or `100` for all RVs)
+* `trait` is the trait name (e.g. `LDL_direct`)
+* `mode` applies to whether you wish to use the R or Rust-based RARity implementation in script 4 (default: "regular")
+* `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
+
+Input files:
+* `input_file` is the path to a list of variant PLINK ids (formatted as chr:pos:ref:alt)
+* `score_file` is the path to the annotation score file (to get RovHer's score file, see: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103))
+* `GENOTYPE_DIR` is a directory of genotype matrices 
+* `pheno_file` is the path to the participant phenotype 
+* `PC_file` is the path to the participant first 20 genetic principle components (PCs)
+  
 ```bash
 
-# Directories
-DIR_SCRIPT="/your/repo/dir"
-DIR_WORK="${DIR_SCRIPT}"
+### Directories
+DIR_WORK="/your/repo/dir"
 mkdir -p $DIR_WORK
 
-# Variables to modify 
-anno_name="RovHer" # score column name
+### Variables to modify 
+anno_name="RovHer"
 prop_blks=(1,5,10,15,20,25,30,35,40,50,60,70,75,80,85,90,95)
 traits=("LDL_direct")
-mode="regular" # regular is the R implementation; "lmutils" is the Rust-based implementation
-sort="descending" # "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
+mode="regular" 
+sort="descending"
 
-# Input files/directories
+### Input files/directories
 input_file="${DIR_WORK}/sample/clumped_plinkids.txt" #clumped_variants_list.txt"
 score_file="${DIR_WORK}/sample/master_score_file.txt"
 GENOTYPE_DIR="${DIR_WORK}/sample/clumped_geno_matrices"
 pheno_file="${DIR_WORK}/sample/pheno_file.txt"
 PC_file="${DIR_WORK}/sample/PCs_1_20.txt"
 
-# Run
-Rscript "${DIR_SCRIPT}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
-Rscript ${DIR_SCRIPT}/2_build_geno_blks.r $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
+### Run
+Rscript "${DIR_WORK}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
+Rscript ${DIR_WORK}/2_build_geno_blks.r $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
 
 for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
   for trait in "${traits[@]}"; do
     cores=2
     threads=2
-    Rscript "${DIR_SCRIPT}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
+    Rscript "${DIR_WORK}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
     export TMPDIR=/tmp 
-    Rscript -e 'Sys.setenv(TMPDIR = "/tmp"); source(paste0("'$DIR_SCRIPT'", "/4_exome_wide_h2.r"))' ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
+    Rscript -e 'Sys.setenv(TMPDIR = "/tmp"); source(paste0("'$DIR_WORK'", "/4_exome_wide_h2.r"))' ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
   done
 done
 
