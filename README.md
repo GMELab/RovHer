@@ -28,7 +28,7 @@
 <!-- ABOUT -->
 ## About
 
-Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a significant challenge. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs based on their probability of functional effect. RovHer employs the [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N=394,841) exome-wide association study (ExWAS) summary statistics of height, which serves as the training trait. For the dependent variable, we used the **false discovery rate** across 4,927,152 RVs as a surrogate measure for the likelihood of variant functionality.
+Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a major challenge in human genetics. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs based on their probability of functional effect. RovHer employs the [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N=394,841) exome-wide association study (ExWAS) summary statistics of height, which serves as the training trait. For the dependent variable, we used the **false discovery rate** across 4,927,152 RVs as a surrogate measure for the likelihood of variant functionality.
 
 The raw outputs of RovHer therefore reflects the predicted FDR of each variant. We subsequently inverted them to obtain a "true positive" scale, where higher RovHer scores (closer to 1) represent a greater probability of a variant being functional, and lower scores (closer to 0) represent likely neutral variants.
 
@@ -49,7 +49,7 @@ RovHer can generate predictions on major operating systems, including GNU/Linux,
 
 ### Software dependencies
 
-The package development version is tested on Linux operating systems. However, the CRAN packages required should be compatible with Windows, Mac, and Linux operating systems. Ensure you have the following:
+The package development version is tested on Linux operating systems. However, the CRAN packages required should be compatible with Windows, Mac, and Linux operating systems. Type the following into your R console:
    ```R
   install.packages("data.table")
   install.packages("R.utils")
@@ -59,15 +59,15 @@ The package development version is tested on Linux operating systems. However, t
   install.packages("MBESS") # confidence intervals on R²
 
   ```
+To install `lmutils ` (optional), which is only required for `mode="lmutils"` in Step 4. Type the following into your R console:
 
-To install **`lmutils`** (optional), which is only required for `mode="lmutils"` in Step 4, type in R:
-    ```r
+    ```R
     install.packages(
       "https://github.com/mrvillage/lmutils.r/archive/refs/heads/master.tar.gz",
-      repos = NULL)   # use the .zip archive on Windows
+      repos = NULL) 
     ```
+    
 ---
-
 
 <!-- Usage: Retrieve pre-computed scores -->
 # Usage: Retrieve pre-computed scores 
@@ -127,12 +127,12 @@ The runtime for these scripts ranges from a few seconds up to a few minutes (dep
 
 Given a ranked list of variants (e.g. prioritized by the RovHer annotation score), this benchmarking pipeline estimates how much trait heritability is captured by a chosen subset of variants. This enables a comparison of **heritability-enrichment** across different variant prioritization methods. This is a four-step pipeline for estimating **exome-wide rare-variant (RV) heritability** from genotype and phenotype data, using the RARity approach. These scripts run sequentially:
 
-| Step | Script | Purpose |
-|------|--------|---------|
-| 1 | `1_split_prop_blks.R` | Splits a large variant list into top proportion bins |
-| 2 | `2_geno_blks.R` | Extract genotype blocks for a target variant subset |
-| 3 | `3_align_geno_pheno.R` | Align and process genotype + phenotype matrices |
-| 4 | `4_exome_h2_RV.R` | Estimate per-block and total trait heritability |
+| Script | Purpose | Outputs |
+|--------|---------|---------|
+|`1_split_prop_blks.R` | Splits a large variant list into top proportion bins | |
+|`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin| 
+|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (mean-impute, quantile normalize, standardize...) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
+|`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/`|
 
 
  **RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval.
@@ -173,96 +173,43 @@ All outputs are written under `<DIR_WORK>/h2_result/top<top>/`:
 Here `<top>` is the proportion bin (e.g. `1` for top 1% of RVs, or `100` for all RVs) and
 `<trait>` is the trait name (e.g. `LDL_direct`).
 
----
-
-### Step 2 — Extract genotype blocks
-
-**Aim.** For each requested proportion bin, scan the full set of clumped genotype
-matrices and keep only the variants present in that bin's variant list. Retained
-columns are accumulated and written out as a smaller set of genotype blocks
-(~5,000 variants each). Small subsets (< 1,000 variants) are written as a single
-combined block spanning all chromosomes.
-
-**Arguments**:
-
-| # | Name | Type | Description |
-|---|------|------|-------------|
-| 1 | `DIR` | path | Working directory root |
-| 2 | `PLINK_list` | path | Base clumped-variant list (`.txt`); the per-bin file `<base>_top<top>.clumped` is loaded |
-| 3 | `prop_blks` | string | Comma-separated proportion bins, e.g. `"1,5,10,80,100"` |
-| 4 | `GENOTYPE_DIR` | path | Directory of clumped genotype matrices |
-
-**Output.** Filtered genotype blocks (`GENE_DF` objects) written to
-`<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set per proportion bin.
 
 ```bash
-Rscript 2_geno_blks.R "$DIR" "$PLINK_list" "1,5,10" "$GENOTYPE_DIR"
+
+# Directories
+DIR_SCRIPT="/your/repo/dir"
+DIR_WORK="${DIR_SCRIPT}"
+mkdir -p $DIR_WORK
+
+# Variables to modify 
+anno_name="RovHer" # score column name
+prop_blks=(1,5,10,15,20,25,30,35,40,50,60,70,75,80,85,90,95)
+traits=("LDL_direct")
+mode="regular" # regular is the R implementation; "lmutils" is the Rust-based implementation
+sort="descending" # "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
+
+# Input files/directories
+input_file="${DIR_WORK}/sample/clumped_plinkids.txt" #clumped_variants_list.txt"
+score_file="${DIR_WORK}/sample/master_score_file.txt"
+GENOTYPE_DIR="${DIR_WORK}/sample/clumped_geno_matrices"
+pheno_file="${DIR_WORK}/sample/pheno_file.txt"
+PC_file="${DIR_WORK}/sample/PCs_1_20.txt"
+
+# Run
+Rscript "${DIR_SCRIPT}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
+Rscript ${DIR_SCRIPT}/2_build_geno_blks.r $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
+
+for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
+  for trait in "${traits[@]}"; do
+    cores=2
+    threads=2
+    Rscript "${DIR_SCRIPT}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
+    export TMPDIR=/tmp 
+    Rscript -e 'Sys.setenv(TMPDIR = "/tmp"); source(paste0("'$DIR_SCRIPT'", "/4_exome_wide_h2.r"))' ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
+  done
+done
+
 ```
-
-### Step 3 — Align and process matrices
-
-```bash
-Rscript 3_align_geno_pheno.R RovHer LDL_direct "$DIR_WORK" 80 20 1 22 \
-        "$pheno_file" "$PC_file"
-```
-**Aim.** Prepare and align both genotype and phenotype matrices by participant `eid`
-
-1. **Align** genotype and phenotype rows by participant `eid`.
-2. **Process the phenotype:** quantile-normalize the trait, regress out `AGE`, `SEX`,
-   and 20 principal components (keep residuals), then standardize to mean 0, sd 1.
-3. **Process the genotype:** mean-impute missing values, drop columns with a minor
-   allele count (MAC) < 2, and standardize each variant column to mean 0, sd 1.
-
-**Arguments**:
-
-| # | Name | Type | Description |
-|---|------|------|-------------|
-| 1 | `anno` | string | Annotation label, e.g. `yhat`, `RovHer` |
-| 2 | `trait` | string | Trait name, e.g. `LDL_direct` |
-| 3 | `DIR_WORK` | path | Working directory root |
-| 4 | `top` | string | Proportion bin, e.g. `80` or `100` |
-| 5 | `cores` | int | Worker count for the parallel cluster |
-| 6 | `chr_start` | int | First chromosome (per-chromosome mode) |
-| 7 | `chr_end` | int | Last chromosome (per-chromosome mode) |
-| 8 | `pheno_file` | path | Phenotype table (`eid` + trait) |
-| 9 | `PC_file` | path | Age/sex/PC covariate table |
-
-**Output.**
-- Processed, aligned genotype blocks → `3_GENO_aligned_<trait>/`
-- Processed phenotype (`norm_df`, with and without `eid`) → `3_PHENO_aligned_<trait>/`
-
-
-### Step 4 — Estimate heritability
-
-```bash
-Rscript 4_exome_h2_RV.R RovHer LDL_direct 1 "$DIR_WORK" 80 2 regular
-```
-
-**Aim.** Estimate heritability block by block, then aggregate into one trait-level
-estimate. For each block, the normalized phenotype is regressed on the block's
-genotypes and the **adjusted R²** is taken as the block's heritability contribution;
-block variances are combined to give a standard error and 95% confidence interval.
-
-Two computation modes:
-- `regular` — base-R implementation (no extra dependencies).
-- `lmutils` — uses `lmutils::calculate_r2()` for the per-block step (faster; requires
-  the `lmutils` package).
-
-**Arguments** (positional):
-
-| # | Name | Type | Description |
-|---|------|------|-------------|
-| 1 | `anno` | string | Annotation label |
-| 2 | `trait` | string | Trait name |
-| 3 | `threads` | int | Worker threads (physical cores available) |
-| 4 | `DIR_WORK` | path | Working directory root |
-| 5 | `top` | int | Proportion bin |
-| 6 | `cores` | int | Core parallelism (files held in memory) |
-| 7 | `mode` | string | `regular` or `lmutils` |
-
-**Output.** `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` (see next section).
-On successful completion, the script removes the intermediate aligned genotype and
-phenotype directories to save space.
 
 ### Interpreting the output
 
