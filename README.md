@@ -183,11 +183,11 @@ Variables:
 * `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
 
 Input files:
-* `input_file` is the path to a list of variant PLINK ids (formatted as chr:pos:ref:alt)
-* `score_file` is the path to the annotation score file (to get RovHer's score file, see: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103))
-* `GENOTYPE_DIR` is a directory of genotype matrices 
-* `pheno_file` is the path to the participant phenotype 
-* `PC_file` is the path to the participant first 20 genetic principle components (PCs)
+* `input_file` is the path to a list of variant PLINK ids (formatted as chr:pos:ref:alt); no column header
+* `score_file` is the path to the annotation score file. To get RovHer's score file, see: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
+* `GENOTYPE_DIR` is a directory of genotype matrices (first column IID, second column onwards are variant PLINK ids)
+* `pheno_file` is the path to the participant phenotype file (first column IID, second column `trait`)
+* `PC_file` is the path to the participant first 20 genetic principle components
   
 ```bash
 
@@ -198,7 +198,7 @@ mkdir -p $DIR_WORK
 ### Variables to modify 
 anno_name="RovHer"
 prop_blks=(1,5,10,15,20,25,30,35,40,50,60,70,75,80,85,90,95)
-traits=("LDL_direct")
+trait="LDL_direct"
 mode="regular" 
 sort="descending"
 
@@ -211,16 +211,14 @@ PC_file="${DIR_WORK}/sample/PCs_1_20.txt"
 
 ### Run
 Rscript "${DIR_WORK}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
-Rscript ${DIR_WORK}/2_build_geno_blks.r $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
+Rscript "${DIR_WORK}/2_build_geno_blks.r" $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
 
 for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
-  for trait in "${traits[@]}"; do
-    cores=2
-    threads=2
-    Rscript "${DIR_WORK}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
-    export TMPDIR=/tmp 
-    Rscript -e 'Sys.setenv(TMPDIR = "/tmp"); source(paste0("'$DIR_WORK'", "/4_exome_wide_h2.r"))' ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
-  done
+  cores=2
+  threads=2
+  Rscript "${DIR_WORK}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
+  export TMPDIR=/tmp 
+  Rscript "${DIR_WORK}/4_exome_wide_h2.r" ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
 done
 
 ```
