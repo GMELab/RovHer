@@ -131,13 +131,13 @@ Given a ranked list of variants (e.g. prioritized by the RovHer annotation score
 |--------|---------|---------|
 |`1_split_prop_blks.R` | Splits a large variant list into top proportion bins | |
 |`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin| 
-|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (mean-impute, quantile normalize, standardize...) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
+|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
 |`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/`|
 
 
  **RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval.
  
-By running the pipeline on different **variant subsets** — for example, the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. This makes the pipeline useful both as a standalone heritability estimator and as an **evaluation metric for variant-prioritization methods** (does ranking variants by a given score concentrate heritability at the top?). 
+By running the pipeline on different **variant subsets** (as defined by variable `prop_blks` below), for example the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. RARity is both as a standalone RV heritability estimator and as an **evaluation metric for variant-prioritization methods** (i.e. does ranking variants by a given score concentrate heritability at the top?). 
 
 ## Upstream requirements
 
@@ -183,9 +183,9 @@ Variables:
 * `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
 
 Input files:
-* `input_file` is the path to a list of variant PLINK ids (formatted as chr:pos:ref:alt); no column header
+* `input_file` is the path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt); no column header
 * `score_file` is the path to the annotation score file. To get RovHer's score file, see: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
-* `GENOTYPE_DIR` is a directory of genotype matrices (first column IID, second column onwards are variant PLINK ids)
+* `GENOTYPE_DIR` is a directory of per-chromosome genotype matrices for these LD-independent variants (first column IID)
 * `pheno_file` is the path to the participant phenotype file (first column IID, second column `trait`)
 * `PC_file` is the path to the participant first 20 genetic principle components
   
