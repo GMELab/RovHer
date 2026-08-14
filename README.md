@@ -17,6 +17,7 @@
       </ul>
     </li>
     <li><a href="#usage-retrieve-pre-computed-scores">Usage: Retrieve Pre-computed Scores</a></li>
+    <li><a href="#benchmark">Benchmark: Rare Variant Heritability Estimation with RARity</a></li>
     <li><a href="#resources">Resources</a></li>
     <li><a href="#acknowledgements">Acknowledgments</a></li>
     <li><a href="#license">License</a></li>
@@ -44,6 +45,7 @@ The raw outputs of RovHer therefore reflects the predicted FDR of each variant. 
 *An overview of the development and application of RovHer.*
 
 # Getting started
+
 ### Hardware
 RovHer can generate predictions on major operating systems, including GNU/Linux, macOS, and Windows. For biobank-scale analyses, we recommend Unix-based hardware with a minimum of 100GB RAM.
 
@@ -204,8 +206,8 @@ The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per ru
 | `N_RVs` | Total number of rare variants included |
 | `ADJ_R2` | **Total heritability estimate** (sum of block adjusted R²) |
 | `STD2` | Aggregated standard deviation (√ of summed block variances) |
-| `LCL_adj` | Lower 95% CI bound (`ADJ_R2 − 1.96 × STD2`) |
-| `UCL_adj` | Upper 95% CI bound (`ADJ_R2 + 1.96 × STD2`) |
+| `LCL_adj` | Lower 95% CI bound (ADJ_R2 − 1.96 × STD2) |
+| `UCL_adj` | Upper 95% CI bound (ADJ_R2 + 1.96 × STD2) |
 
 
 ## Directory structure
