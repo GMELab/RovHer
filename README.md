@@ -17,7 +17,6 @@
       </ul>
     </li>
     <li><a href="#usage-retrieve-pre-computed-scores">Usage: Retrieve Pre-computed Scores</a></li>
-    <li><a href="#benchmark">Benchmark: Rare Variant Heritability Estimation with RARity</a></li>
     <li><a href="#resources">Resources</a></li>
     <li><a href="#acknowledgements">Acknowledgments</a></li>
     <li><a href="#license">License</a></li>
@@ -45,7 +44,6 @@ The raw outputs of RovHer therefore reflects the predicted FDR of each variant. 
 *An overview of the development and application of RovHer.*
 
 # Getting started
-
 ### Hardware
 RovHer can generate predictions on major operating systems, including GNU/Linux, macOS, and Windows. For biobank-scale analyses, we recommend Unix-based hardware with a minimum of 100GB RAM.
 
@@ -70,10 +68,10 @@ To install `lmutils ` (optional), which is only required for `mode="lmutils"` in
 
 1. Clone the repo into your working directory. This step should take only a few seconds on any computer.
    ```sh
-   mydir="/my/working/dir" # modify 
-   cd $mydir
+   DIR_WORK="/your/repo/dir"
+   cd $DIR_WORK
 
-   git clone https://github.com/Keonapang/RovHer.git
+   git clone https://github.com/GMELab/RovHer.git
    cd RovHer
    ```
 2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`. This step should take up to several minutes.
@@ -94,8 +92,8 @@ For **option A**, the required input is a single text file `variants.txt` consis
 |  8:203440:G:C| 
 
    ```sh
-    INFILE="$mydir/RovHer/Demo/variants.txt" # input list 
-    DIR_OUT="$mydir/RovHer/Demo" # output directory 
+    INFILE="Demo/variants.txt" # input list 
+    DIR_OUT="./Demo" # output directory 
 
     cd $mydir/RovHer
     Rscript Scripts/get_scores.r $INFILE $DIR_OUT
@@ -103,13 +101,12 @@ For **option A**, the required input is a single text file `variants.txt` consis
 
 For **option B**, no input file is required. Simply specify a list of gene(s) in all capital letters:
   ```sh
-    DIR_OUT="$mydir/RovHer/Demo" # output directory 
+    DIR_OUT=./Demo" # output directory 
 
-    GENE="LDLR BRCA1 APOB" # example of a gene set  
+    GENE="LDLR BRCA1 APOB" # example of a set of genes  
     # or
     GENE="LDLR" # example of one gene 
 
-    cd $mydir/RovHer
     Rscript Scripts/get_scores_per_gene.r "$DIR_OUT" "$GENE"
   ``` 
 
@@ -121,21 +118,33 @@ The runtime for these scripts ranges from a few seconds up to a few minutes (dep
 
 # Benchmark: Rare variant heritability estimation with RARity 
 
-Given a ranked list of variants (e.g. prioritized by the RovHer annotation score), this benchmarking pipeline estimates how much trait heritability is captured by a chosen subset of variants. This enables a comparison of heritability enrichment across different variant prioritization methods. This is a four-step pipeline for estimating **exome-wide rare-variant (RV) heritability** from genotype and phenotype data, using the RARity approach. By running the pipeline on different **variant subsets** (as defined by variable `prop_blks` below), for example the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. RARity is both as a standalone RV heritability estimator and as an **evaluation metric for variant prioritization methods** (i.e. does ranking variants by a given score concentrate heritability at the top?). 
-
-These scripts run sequentially:
+Given a ranked list of variants (e.g. prioritized by the RovHer annotation score), this benchmarking pipeline estimates how much trait heritability is captured by a chosen subset of variants. This enables a comparison of **heritability-enrichment** across different variant prioritization methods. This is a four-step pipeline for estimating **exome-wide rare-variant (RV) heritability** from genotype and phenotype data, using the RARity approach. These scripts run sequentially:
 
 | Script | Purpose | Outputs |
 |--------|---------|---------|
-|`1_split_prop_blks.R` | Splits a large variant list into top proportion bins | |
-|`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin| 
-|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/`|
-|`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/`|
+|`1_split_prop_blks.R` | Split a clumped variant list into top-proportion subsets | example: sample/clumped_plinkids_top1.clumped |
+|`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin. example: sample/h2_result/top1/2_GENO_RDATA| 
+|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
+|`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` example: sample/h2_result/top1/4_LDL_direct_H2_RESULTS|
 
 
-**RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval.
+ **RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval.
  
+By running the pipeline on different **variant subsets** (as defined by variable `prop_blks` below), for example the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. RARity is both as a standalone RV heritability estimator and as an **evaluation metric for variant-prioritization methods** (i.e. does ranking variants by a given score concentrate heritability at the top?). 
+
 ---
+
+## Prepare input files
+
+See RovHer/sample directory for more information:
+
+List of clumped variants (see: sample/clumped_plinkids.txt)
+Master score file (see: sample/master_score_file.txt)
+Genetic principle components (see: sample/PCs_1_20.txt)
+
+Phenotype file (see: sample/pheno_file.txt)
+Genotype directory (sample/clumped_geno_matrices)
+* sample/clumped_geno_matrices/CHR_1.clumped_00.RData following this format: CHR_<chromosome>.clumped_<block>.RData, with chromosome being anywhere from 1..22 and block being anywhere from 00..01..02.. and onwards.
 
 ## Run 
 
@@ -149,8 +158,8 @@ Variables:
 * `mode` applies to whether you wish to use the R or Rust-based RARity implementation in script 4 (default: "regular")
 * `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
 
-Input files:
-* `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically from PLINK
+Prepared input files:
+* `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically generated from the PLINK
    `--clump` function; no column header
 * `score_file` path to the master annotation file. Retrieve pre-computed RovHer annotations from: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 * `GENOTYPE_DIR` directory containing per-chromosome genotype matrices for these LD-independent variants saved as `.RData` files each containing a
@@ -163,7 +172,7 @@ Input files:
 ### Directories
 
 DIR_WORK="/your/repo/dir"
-mkdir -p $DIR_WORK
+cd ${DIR_WORK}/RovHer
 
 ### Variables to modify
 
@@ -175,22 +184,22 @@ sort="descending"
 
 ### Input files/directories
 
-input_file="${DIR_WORK}/sample/clumped_plinkids.txt" #clumped_variants_list.txt"
-score_file="${DIR_WORK}/sample/master_score_file.txt"
-GENOTYPE_DIR="${DIR_WORK}/sample/clumped_geno_matrices"
-pheno_file="${DIR_WORK}/sample/pheno_file.txt"
-PC_file="${DIR_WORK}/sample/PCs_1_20.txt"
+input_file="./sample/clumped_plinkids.txt"
+score_file="./sample/master_score_file.txt"
+GENOTYPE_DIR="./sample/clumped_geno_matrices" # directory
+pheno_file="./sample/pheno_file.txt"
+PC_file="./sample/PCs_1_20.txt"
 
 ### Run
 
-Rscript "${DIR_WORK}/1_split_prop_blks.r" $input_file $anno_name $prop_blks $sort $score_file $DIR_WORK
-Rscript "${DIR_WORK}/2_build_geno_blks.r" $DIR_WORK $input_file $prop_blks $GENOTYPE_DIR
+Rscript "./1_split_prop_blks.r" ${input_file} ${anno_name} ${prop_blks} ${sort} ${score_file} ${DIR_WORK}
+Rscript "./2_build_geno_blks.r" ${DIR_WORK} ${input_file} ${prop_blks} ${GENOTYPE_DIR}
 
 for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
   cores=2
   threads=2
-  Rscript "${DIR_WORK}/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
-  Rscript "${DIR_WORK}/4_exome_wide_h2.r" ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
+  Rscript "./3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
+  Rscript "./4_exome_wide_h2.r" ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
 done
 
 ```
@@ -206,8 +215,8 @@ The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per ru
 | `N_RVs` | Total number of rare variants included |
 | `ADJ_R2` | **Total heritability estimate** (sum of block adjusted R²) |
 | `STD2` | Aggregated standard deviation (√ of summed block variances) |
-| `LCL_adj` | Lower 95% CI bound (ADJ_R2 − 1.96 × STD2) |
-| `UCL_adj` | Upper 95% CI bound (ADJ_R2 + 1.96 × STD2) |
+| `LCL_adj` | Lower 95% CI (ADJ_R2 − 1.96 × STD2) |
+| `UCL_adj` | Upper 95% CI (ADJ_R2 + 1.96 × STD2) |
 
 
 ## Directory structure
@@ -217,10 +226,10 @@ All outputs are written under `<DIR_WORK>/h2_result/top<top>/`:
 ```
 <DIR_WORK>/h2_result/
 └── top<top>/
-    ├── 2_GENO_RDATA/                    # Step 2: filtered genotype blocks
-    ├── 3_GENO_aligned_<trait>/          # Step 3: processed, aligned genotype blocks
-    ├── 3_PHENO_aligned_<trait>/         # Step 3: processed phenotype (norm_df)
-    └── 4_<trait>_H2_RESULTS/            # Step 4: heritability results
+    ├── 2_GENO_RDATA/                           # Step 2: filtered genotype blocks
+    ├── 3_GENO_aligned_<trait>/                 # Step 3: processed, aligned genotype blocks
+    ├── 3_PHENO_aligned_<trait>/                # Step 3: processed, aligned phenotype (norm_df)
+    └── 4_<trait>_H2_RESULTS/                   # Step 4: heritability results
         ├── <trait>_H2_exome_raw.txt            # per-block raw R² (intermediate)
         ├── <trait>_H2_exome_raw_processed.txt  # per-block, with CIs/variances
         └── TOTAL_H2_<trait>_exome.txt          # ← final trait-level heritability
@@ -241,6 +250,7 @@ RovHer scores for all 4,927,152 rare variants analyzed in this study from the UK
 A separate set of 79,971,228 scores, trained without prediction features subject to commercial licensing restrictions, will also be provided.
 
 <!-- Acknowledgements -->
+
 ## Acknowledgements
 
 We gratefully acknowledge and thank the authors of various in silico tools that we utilized in our study for making their pre-computed scores and training data readily available.
@@ -254,11 +264,13 @@ We gratefully acknowledge and thank the authors of various in silico tools that 
 [3] Pathan, N., Deng, W. Q., Khan, M., Scipio, M. D., Mao, S., Morton, R. W., Lali, R., Pigeyre, M., Chong, M. R., & Paré, G. (2022). A method to estimate the contribution of rare coding variants to complex trait heritability. Nature Communications, 15(1), 1245. https://doi.org/10.1038/s41467-024-45407-8
 
 <!-- Citing -->
+
 ## Citing RovHer
 
 If you use RovHer in your research, please cite our paper (citation details will be added upon publication).
 
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
