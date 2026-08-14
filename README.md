@@ -123,7 +123,7 @@ Given a ranked list of variants (e.g. prioritized by the RovHer annotation score
 | Script | Purpose | Outputs |
 |--------|---------|---------|
 |`1_split_prop_blks.R` | Split a clumped variant list into top-proportion subsets | example: sample/clumped_plinkids_top1.clumped |
-|`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin. example: sample/h2_result/top1/2_GENO_RDATA| 
+|`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin. example: [sample/h2_result/top1/2_GENO_RDATA](sample/h2_result/top1/2_GENO_RDATA) | 
 |`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
 |`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` example: sample/h2_result/top1/4_LDL_direct_H2_RESULTS|
 
