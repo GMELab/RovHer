@@ -59,13 +59,7 @@ The package development version is tested on Linux operating systems. However, t
   install.packages("MBESS") # confidence intervals on R²
 
   ```
-To install `lmutils ` (optional), which is only required for `mode="lmutils"` in Step 4. Type the following into your R console:
-
-    ```R
-    install.packages(
-      "https://github.com/mrvillage/lmutils.r/archive/refs/heads/master.tar.gz",
-      repos = NULL) 
-    ```
+To install `lmutils ` (optional), which is only required for `mode="lmutils"` in Step 4, please see: https://github.com/GMELab/lmutils.r
     
 ---
 
