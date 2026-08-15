@@ -160,7 +160,7 @@ Approximately LD-independent variants, typically from PLINK `--clump`.
 The annotation scores used to rank variants.
 
 | PLINK_SNP_NAME | `<anno_name>` |
-|--------|:--------:|-------------|
+|--------|:--------:|
 | `chr:pos:ref:alt` | 0.80|
 
 **3. Covariates / principal components** — `PC_file` &nbsp; ([sample/PCs_1_20.txt](sample/PCs_1_20.txt))
@@ -174,6 +174,7 @@ The annotation scores used to rank variants.
 | IID | `<trait>` |
 |--------|:--------:|
 | p1 | 6.50|
+| ... | ...|
 
 **5. Genotype directory** — `GENOTYPE_DIR` &nbsp; ([sample/clumped_geno_matrices](sample/clumped_geno_matrices))
 A directory of per-chromosome genotype matrices, each an `.RData` file containing a **single object named `GENE_DF`**.
