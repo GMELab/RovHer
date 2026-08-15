@@ -232,14 +232,14 @@ PC_file="./sample/PCs_1_20.txt"
 
 ### Run
 
-Rscript "./1_split_prop_blks.r" ${input_file} ${anno_name} ${prop_blks} ${sort} ${score_file} ${DIR_WORK}
-Rscript "./2_build_geno_blks.r" ${DIR_WORK} ${input_file} ${prop_blks} ${GENOTYPE_DIR}
+Rscript "./Scripts/1_split_prop_blks.r" ${input_file} ${anno_name} ${prop_blks} ${sort} ${score_file} ${DIR_WORK}
+Rscript "./Scripts/2_build_geno_blks.r" ${DIR_WORK} ${input_file} ${prop_blks} ${GENOTYPE_DIR}
 
 for top in 1 5 10 15 20 25 30 35 40 50 60 70 75 80 85 90 95; do
   cores=2
   threads=2
-  Rscript "./3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
-  Rscript "./4_exome_wide_h2.r" ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
+  Rscript "./Scripts/3_align_geno_pheno.r" ${anno_name} ${trait} ${DIR_WORK} ${top} ${cores} ${pheno_file} ${PC_file}
+  Rscript "./Scripts/4_exome_wide_h2.r" ${anno_name} ${trait} ${threads} ${DIR_WORK} ${top} ${cores} ${mode}
 done
 
 ```
