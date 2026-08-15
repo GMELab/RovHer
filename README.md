@@ -187,7 +187,9 @@ A directory of per-chromosome genotype matrices, each an `.RData` file containin
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Run the pipeline
+
 A copy of the wrapper script (below) to execute the four sequential scripts is found in: [Scripts/heritability_wrapper.sh](Scripts/heritability_wrapper.sh)
+
 
 Directory:
 `DIR_WORK` is the full path to the repository
