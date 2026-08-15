@@ -154,6 +154,7 @@ Approximately LD-independent variants, typically from PLINK `--clump`.
 ```
 1:10030:A:T
 8:203440:G:C
+...
 ```
 
 **2. Master score file** — `score_file` &nbsp; ([sample/master_score_file.txt](sample/master_score_file.txt))
@@ -169,6 +170,7 @@ The annotation scores used to rank variants.
 | IID | AGE | SEX | PC1 | ... | PC20 | 
 |--------|:--------:|:--------:|:--------:|:--------:|:--------:|
 | p1 | 68| 0 | 0.00043 | ... | 0.003|
+| ... | ...| ... | ...| ... | ...|
 
 **4. Phenotype file** — `pheno_file` &nbsp; ([sample/pheno_file.txt](sample/pheno_file.txt))
 
