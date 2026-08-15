@@ -151,9 +151,10 @@ Example versions of every input are in the [`sample/`](sample/) directory. All t
 Approximately LD-independent variants, typically from PLINK `--clump`.
 * Plain text, **no header**, one variant ID per line.
 
-| 1:10030:A:T |
-| 8:203440:G:C |
-| ... |
+```
+1:10030:A:T
+8:203440:G:C
+```
 
 **2. Master score file** — `score_file` &nbsp; ([sample/master_score_file.txt](sample/master_score_file.txt))
 The annotation scores used to rank variants.
