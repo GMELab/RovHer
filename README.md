@@ -133,7 +133,7 @@ The pipeline runs as four sequential scripts:
 |--------|---------|---------|
 |`1_split_prop_blks.R` | Split a clumped variant list into top-proportion subsets | example: [sample/clumped_plinkids_top1.clumped](sample/clumped_plinkids_top1.clumped) |
 |`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin. example: [sample/h2_result/top1/2_GENO_RDATA](sample/h2_result/top1/2_GENO_RDATA) | 
-|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in a directory (example: [3_GENO_aligned_LDL_direct](sample/h2_result/top1/3_GENO_aligned_LDL_direct)) and phenotype file in a directory (example: [3_PHENO_aligned_LDL_direct](sample/h2_result/top1/3_PHENO_aligned_LDL_direct))|
+|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | directories of genotype blocks (example: [3_GENO_aligned_LDL_direct](sample/h2_result/top1/3_GENO_aligned_LDL_direct)) and phenotype files (example: [3_PHENO_aligned_LDL_direct](sample/h2_result/top1/3_PHENO_aligned_LDL_direct))|
 |`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` example: [sample/h2_result/top1/4_LDL_direct_H2_RESULTS](sample/h2_result/top1/4_LDL_direct_H2_RESULTS)|
 
  
@@ -147,25 +147,52 @@ By running the pipeline on different **variant subsets** (as defined by variable
 
 Example versions of every input are in the [`sample/`](sample/) directory. All text files are **tab-delimited**. In the tables below, **Required** marks the columns the pipeline looks up *by name* — any additional columns are ignored. Variant IDs use the `chr:pos:ref:alt` format (underscore-delimited `chr_pos_ref_alt` is also accepted).
 
-List of clumped variants (see: sample/clumped_plinkids.txt)
-Master score file (see: sample/master_score_file.txt)
-Genetic principle components (see: sample/PCs_1_20.txt)
+**1. Clumped variant list** — `input_file` &nbsp; ([sample/clumped_plinkids.txt](sample/clumped_plinkids.txt))
+Approximately LD-independent variants, typically from PLINK `--clump`.
+* Plain text, **no header**, one variant ID per line.
 
-Phenotype file (see: sample/pheno_file.txt)
-Genotype directory (sample/clumped_geno_matrices)
-* sample/clumped_geno_matrices/CHR_1.clumped_00.RData following this format: CHR_<chromosome>.clumped_<block>.RData, with chromosome being anywhere from 1..22 and block being anywhere from 00..01..02.. and onwards.
+```
+1:10030:A:T
+8:203440:G:C
+```
 
-## Run 
+**2. Master score file** — `score_file` &nbsp; ([sample/master_score_file.txt](sample/master_score_file.txt))
+The annotation scores used to rank variants.
+
+| PLINK_SNP_NAME | `<anno_name>` |
+|--------|:--------:|-------------|
+| `chr:pos:ref:alt` | 0.80|
+
+**3. Covariates / principal components** — `PC_file` &nbsp; ([sample/PCs_1_20.txt](sample/PCs_1_20.txt))
+
+| IID | AGE | SEX | PC1 | ... | PC20 | 
+|--------|:--------:|:--------:|:--------:|:--------:|:--------:|
+| p1 | 68| 0 | 0.00043 | ... | 0.003|
+
+**4. Phenotype file** — `pheno_file` &nbsp; ([sample/pheno_file.txt](sample/pheno_file.txt))
+
+| IID | `<trait>` |
+|--------|:--------:|
+| p1 | 6.50|
+
+**5. Genotype directory** — `GENOTYPE_DIR` &nbsp; ([sample/clumped_geno_matrices](sample/clumped_geno_matrices))
+A directory of per-chromosome genotype matrices, each an `.RData` file containing a **single object named `GENE_DF`**.
+* File naming: `CHR_<chr>.clumped_<blk>.RData` — `<chr>` = 1–22, `<blk>` = 00, 01, 02, …
+* `GENE_DF` layout: **first column** = participant ID (`IID`/`eid`); **remaining columns** = variant genotypes, named `chr:pos:ref:alt`.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Run the pipeline
 
 Directory:
-`DIR_WORK` is the complete path of repository 
+`DIR_WORK` is the full path to the repository
 
 Variables:
-* `anno_name`
-* `prop_blks` is a list of proportion bins (e.g. `1` for top 1% of RVs, or `100` for all RVs)
+* `anno_name` is the score column to rank by (default: `RovHer`) 
+* `prop_blks` is a list of comma-separated proportion bins (e.g. `1` for top 1% of RVs, or `100` for all RVs)
 * `trait` is the trait name (e.g. `LDL_direct`)
-* `mode` applies to whether you wish to use the R or Rust-based RARity implementation in script 4 (default: "regular")
-* `sort` is how to sort list of variants, either "descending" (high scores = more functional) or "ascending" (lower scores = more functional) 
+* `sort` is how to sort list of variants; `descending` (higher score = more functional) or `ascending`
+* `mode` is the step 4 backend: `regular` (R) or `lmutils` (Rust) — default `regular`
 
 Prepared input files:
 * `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically generated from the PLINK
@@ -183,7 +210,7 @@ Prepared input files:
 DIR_WORK="/your/repo/dir"
 cd ${DIR_WORK}/RovHer
 
-### Variables to modify
+### Settings
 
 anno_name="RovHer"
 prop_blks=(1,5,10,15,20,25,30,35,40,50,60,70,75,80,85,90,95)
@@ -191,7 +218,7 @@ trait="LDL_direct"
 mode="regular" 
 sort="descending"
 
-### Input files/directories
+### Input files / directories
 
 input_file="./sample/clumped_plinkids.txt"
 score_file="./sample/master_score_file.txt"
@@ -215,7 +242,7 @@ done
 
 ### Interpreting the output
 
-The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per run:
+The final heritability estimate for each proportion bin is written to `h2_result/top<top>/4_<trait>_H2_RESULTS/TOTAL_H2_<trait>_exome.txt`
 
 | Column | Meaning |
 |--------|---------|
@@ -227,6 +254,9 @@ The final file `TOTAL_H2_<trait>_exome.txt` is tab-delimited with one row per ru
 | `LCL_adj` | Lower 95% CI (ADJ_R2 − 1.96 × STD2) |
 | `UCL_adj` | Upper 95% CI (ADJ_R2 + 1.96 × STD2) |
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
 
 ## Directory structure
 
@@ -254,9 +284,7 @@ To assess a prioritization method, run the pipeline for several proportion bins 
 
 # Resources
 
-RovHer scores for all 4,927,152 rare variants analyzed in this study from the UK Biobank, as well as pre-computed scores for 79,971,228 possible autosomal rare variants in humans, will be made publicly available for download on [Zenodo](https://zenodo.org/records/15596103?preview=1) upon publication. 
-
-A separate set of 79,971,228 scores, trained without prediction features subject to commercial licensing restrictions, will also be provided.
+RovHer scores for all 4,927,152 rare variants analyzed in this study from the UK Biobank, as well as pre-computed scores for 79,971,228 possible autosomal rare variants in humans, will be made publicly available for download on [Zenodo](https://zenodo.org/records/15596103?preview=1) upon publication. A separate set of 79,971,228 scores, trained without prediction features subject to commercial licensing restrictions, will also be provided.
 
 <!-- Acknowledgements -->
 
