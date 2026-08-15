@@ -81,7 +81,7 @@ The development version is tested on Linux, but the required CRAN packages are c
    cd RovHer
    ```
 
-2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://doi.org/10.5281/zenodo.15596103) and save it to your local repo as `RovHer/All_RovHer_Scores.txt.gz` (up to several minutes).
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://doi.org/10.5281/zenodo.21908110) and save it to your local repo as `RovHer/All_RovHer_Scores.txt.gz` (up to several minutes).
 
 3. Run one of two helper scripts to extract a subset of scores:
 
@@ -203,7 +203,7 @@ A copy of the wrapper script (as described below) to execute the four sequential
 **Prepared input files**:
 * `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically generated from the PLINK
    `--clump` function; no column header
-* `score_file` path to the master annotation file. Retrieve pre-computed RovHer annotations from: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
+* `score_file` path to the master annotation file. Retrieve pre-computed RovHer annotations from: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21908110.svg)](https://doi.org/10.5281/zenodo.15596103)
 * `GENOTYPE_DIR` directory containing per-chromosome genotype matrices for these LD-independent variants saved as `.RData` files each containing a
    single object named `GENE_DF`. Here, variant IDs are in `chr:pos:ref:alt_alt` format.
 * `pheno_file` path to a participant trait file (first column IID, second column is the `trait`)
