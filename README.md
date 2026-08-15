@@ -1,5 +1,5 @@
 # RovHer: heritability-optimized scores for the functional prioritization of rare missense variants
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21908110.svg)](https://doi.org/10.5281/zenodo.21908110)
 
 <!-- TABLE OF CONTENTS -->
 <a name="readme-top"></a>
