@@ -6,9 +6,7 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about">About</a>
-    </li>
+    <li><a href="#about">About</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
@@ -17,7 +15,13 @@
       </ul>
     </li>
     <li><a href="#usage-retrieve-pre-computed-scores">Usage: Retrieve Pre-computed Scores</a></li>
-    <li><a href="#resources">Resources</a></li>
+    <li>
+      <a href="#benchmark-rare-variant-heritability-with-rarity">Benchmark: RV Heritability with RARity</a>
+      <ul>
+        <li><a href="#prepare-input-files">Prepare Input Files</a></li>
+        <li><a href="#run-the-pipeline">Run the Pipeline</a></li>
+      </ul>
+    </li>
     <li><a href="#acknowledgements">Acknowledgments</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#citing-rovher">Citing RovHer</a></li>
@@ -25,31 +29,31 @@
   </ol>
 </details>
 
+
 <!-- ABOUT -->
 ## About
 
-Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a major challenge in human genetics. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs based on their probability of functional effect. RovHer employs the [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N=394,841) exome-wide association study (ExWAS) summary statistics of height, which serves as the training trait. For the dependent variable, we used the **false discovery rate** across 4,927,152 RVs as a surrogate measure for the likelihood of variant functionality.
+Predicting **rare variants** (RVs; MAF < 1%) that influence complex disease risk is a major challenge in human genetics. We introduce **RovHer** (RV heritability-optimized scores), an unbiased, scalable method that scores missense RVs by their probability of functional effect. RovHer uses a [Multivariate Adaptive Regression Splines](https://CRAN.R-project.org/package=earth) [1] model to integrate feature annotations with [Genebass](https://app.genebass.org/) [2] (N = 394,841) exome-wide association study (ExWAS) summary statistics of height, the training trait. As the dependent variable, we used the **false discovery rate** across 4,927,152 RVs as a surrogate for the likelihood of variant functionality.
 
-The raw outputs of RovHer therefore reflects the predicted FDR of each variant. We subsequently inverted them to obtain a "true positive" scale, where higher RovHer scores (closer to 1) represent a greater probability of a variant being functional, and lower scores (closer to 0) represent likely neutral variants.
+The raw RovHer output reflects each variant's predicted FDR. We invert these to a "true positive" scale, so higher RovHer scores (closer to 1) indicate a greater probability of a variant being functional, and lower scores (closer to 0) indicate likely neutral variants.
 
-
-**Performance**:
-* prioritizes missense RVs that explain the greatest proportion of genome-wide trait variance, which are variants that more likely functional [3]
+**Performance**
+* Prioritizes missense RVs that explain the greatest proportion of genome-wide trait variance — the variants most likely to be functional [3].
 
 **Usage**:
-* scores are trait-agnostic (i.e. not tied to a specific disease or phenotype)
-* RovHer scores were generated for all possible rare SNVs deposited in the dbNSFP database; however, they are optimized for missense variants.
+* Scores are trait-agnostic (not tied to a specific disease or phenotype).
+* Scores were generated for all possible rare SNVs in the dbNSFP database, but are optimized for missense variants.
 
 ![Workflow Overview](RovHer%20workflow.png)
 *An overview of the development and application of RovHer.*
 
 # Getting started
 ### Hardware
-RovHer can generate predictions on major operating systems, including GNU/Linux, macOS, and Windows. For biobank-scale analyses, we recommend Unix-based hardware with a minimum of 100GB RAM.
+RovHer runs on all major operating systems (GNU/Linux, macOS, Windows). For biobank-scale analyses, we recommend Unix-based hardware with at least 100 GB RAM.
 
 ### Software dependencies
 
-The package development version is tested on Linux operating systems. However, the CRAN packages required should be compatible with Windows, Mac, and Linux operating systems. Type the following into your R console:
+The development version is tested on Linux, but the required CRAN packages are compatible with Windows, macOS, and Linux. In your R console:
    ```R
   install.packages("data.table")
   install.packages("R.utils")
@@ -59,14 +63,16 @@ The package development version is tested on Linux operating systems. However, t
   install.packages("MBESS") # confidence intervals on R²
 
   ```
-To install `lmutils ` (optional), which is only required for `mode="lmutils"` in Step 4, please see: https://github.com/GMELab/lmutils.r
-    
+`lmutils` is **optional** and only needed for `mode = "lmutils"` in Step 4 (a faster, Rust-based implementation). See: https://github.com/GMELab/lmutils.r
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ---
 
 <!-- Usage: Retrieve pre-computed scores -->
-# Usage: Retrieve pre-computed scores 
+# Usage: Retrieve pre-computed scores
 
-1. Clone the repo into your working directory. This step should take only a few seconds on any computer.
+1. Clone the repo into your working directory (a few seconds on any computer):
    ```sh
    DIR_WORK="/your/repo/dir"
    cd $DIR_WORK
@@ -74,69 +80,72 @@ To install `lmutils ` (optional), which is only required for `mode="lmutils"` in
    git clone https://github.com/GMELab/RovHer.git
    cd RovHer
    ```
-2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://zenodo.org/records/15596103?preview=1) and save it to your local repo directory as `/RovHer/All_RovHer_Scores.txt.gz`. This step should take up to several minutes.
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
 
-3. Run automated scripts to obtain a subset of RovHer scores for downstream analyses in two ways:
+2. Download `All_RovHer_Scores.txt.gz` from [Zenodo](https://doi.org/10.5281/zenodo.15596103) and save it to your local repo as `RovHer/All_RovHer_Scores.txt.gz` (up to several minutes).
 
-| Option | Description | Output | Script name |
-|--:|-----------|-----------|-----------|
-|  A| Retrieve scores for a list of RVs in `variants.txt` | A `output_variants.txt` with tab-delimited columns: PLINK_SNP_NAME, Gene, RovHer_score | `get_scores.r` |
-|  B| For a given protein-coding `gene` or set of genes, retrieve a list of scored RVs | A `output_gene.txt` or `output_geneset.txt` with tab-delimited columns: PLINK_SNP_NAME, Gene, RovHer_score | `get_scores_per_gene.r` |
+3. Run one of two helper scripts to extract a subset of scores:
 
+   | Option | Description | Output columns | Script |
+   |:--:|-------------|----------------|--------|
+   | A | Retrieve scores for a list of RVs in `variants.txt` | `PLINK_SNP_NAME`, `Gene`, `RovHer_score` | `get_scores.R` |
+   | B | Retrieve scored RVs for one or more protein-coding genes | `PLINK_SNP_NAME`, `Gene`, `RovHer_score` | `get_scores_per_gene.R` |
 
-For **option A**, the required input is a single text file `variants.txt` consisting of a column of PLINK IDs (no headers). Variants do not have to be sorted. For example `$INFILE` may look like:
-|             |
-|-------------|
-|  1:10030:A:T| 
-|  8:203440:G:C| 
+**Option A** takes a single text file of PLINK IDs (no header, unsorted is fine):
 
-   ```sh
-    INFILE="Demo/variants.txt" # input list 
-    DIR_OUT="./Demo" # output directory 
+```
+1:10030:A:T
+8:203440:G:C
+```
 
-    cd $mydir/RovHer
-    Rscript Scripts/get_scores.r $INFILE $DIR_OUT
-  ```
+```sh
+INFILE="Demo/variants.txt"   # input list
+DIR_OUT="./Demo"             # output directory
 
-For **option B**, no input file is required. Simply specify a list of gene(s) in all capital letters:
-  ```sh
-    DIR_OUT=./Demo" # output directory 
+cd $DIR_WORK/RovHer
+Rscript Scripts/get_scores.R $INFILE $DIR_OUT
+```
 
-    GENE="LDLR BRCA1 APOB" # example of a set of genes  
-    # or
-    GENE="LDLR" # example of one gene 
+**Option B** takes no input file — just specify one or more genes in uppercase:
 
-    Rscript Scripts/get_scores_per_gene.r "$DIR_OUT" "$GENE"
-  ``` 
+```sh
+DIR_OUT="./Demo"             # output directory
+
+GENE="LDLR BRCA1 APOB"       # a set of genes
+# or
+GENE="LDLR"                  # a single gene
+
+Rscript Scripts/get_scores_per_gene.R "$DIR_OUT" "$GENE"
+```
+
+Runtime ranges from seconds to a few minutes depending on input size, on a desktop (16+ GB RAM, 4+ cores).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-The runtime for these scripts ranges from a few seconds up to a few minutes (depending on input variant file size) on a desktop computer (RAM: 16+ GB, CPU: 4+ cores, 3.3+ GHz/core).
 
 ---
 
 # Benchmark: Rare variant heritability estimation with RARity 
 
-Given a ranked list of variants (e.g. prioritized by the RovHer annotation score), this benchmarking pipeline estimates how much trait heritability is captured by a chosen subset of variants. This enables a comparison of **heritability-enrichment** across different variant prioritization methods. This is a four-step pipeline for estimating **exome-wide rare-variant (RV) heritability** from genotype and phenotype data, using the RARity approach. These scripts run sequentially:
+Given a ranked list of variants (e.g. prioritized by the RovHer annotation score), this pipeline estimates how much trait heritability is captured by a chosen subset of variants.  **RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval. Block estimates are summed into a single trait-level heritability with a 95% confidence interval.
+
+The pipeline runs as four sequential scripts:
 
 | Script | Purpose | Outputs |
 |--------|---------|---------|
-|`1_split_prop_blks.R` | Split a clumped variant list into top-proportion subsets | example: sample/clumped_plinkids_top1.clumped |
+|`1_split_prop_blks.R` | Split a clumped variant list into top-proportion subsets | example: [sample/clumped_plinkids_top1.clumped](sample/clumped_plinkids_top1.clumped) |
 |`2_geno_blks.R` | Extract genotype blocks for a target variant subset | Filtered genotype blocks (`GENE_DF` objects) written to `<DIR>/h2_result/top<top>/2_GENO_RDATA/`, one set of blocks per proportion bin. example: [sample/h2_result/top1/2_GENO_RDATA](sample/h2_result/top1/2_GENO_RDATA) | 
-|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in `3_GENO_aligned_<trait>/` and phenotype (`norm_df`) in `3_PHENO_aligned_<trait>/|
-|`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` example: sample/h2_result/top1/4_LDL_direct_H2_RESULTS|
+|`3_align_geno_pheno.R` | Align both genotype and phenotype matrices by participant `eid` and processes them (i.e. mean-impute, standardize) | genotype blocks in a directory (example: [3_GENO_aligned_LDL_direct](sample/h2_result/top1/3_GENO_aligned_LDL_direct)) and phenotype file in a directory (example: [3_PHENO_aligned_LDL_direct](sample/h2_result/top1/3_PHENO_aligned_LDL_direct))|
+|`4_exome_h2_RV.R` | Estimate per-block heritability then aggregate into one trait-level estimate| `TOTAL_H2_<trait>_exome.txt` in `4_<trait>_H2_RESULTS/` example: [sample/h2_result/top1/4_LDL_direct_H2_RESULTS](sample/h2_result/top1/4_LDL_direct_H2_RESULTS)|
 
-
- **RARity** estimates heritability from *blocks* of approximately LD-independent variants. Within each block, the normalized phenotype is regressed on the block's genotype matrix, and the adjusted R² of that regression is an estimate of the heritability explained by the block. Block estimates (and their variances) are then summed into a single trait-level heritability with a 95% confidence interval.
  
 By running the pipeline on different **variant subsets** (as defined by variable `prop_blks` below), for example the top *X%* of variants ranked by a functional annotation — you can measure how heritability concentrates among prioritized variants. RARity is both as a standalone RV heritability estimator and as an **evaluation metric for variant-prioritization methods** (i.e. does ranking variants by a given score concentrate heritability at the top?). 
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
 ## Prepare input files
 
-See RovHer/sample directory for more information:
+Example versions of every input are in the [`sample/`](sample/) directory. All text files are **tab-delimited**. In the tables below, **Required** marks the columns the pipeline looks up *by name* — any additional columns are ignored. Variant IDs use the `chr:pos:ref:alt` format (underscore-delimited `chr_pos_ref_alt` is also accepted).
 
 List of clumped variants (see: sample/clumped_plinkids.txt)
 Master score file (see: sample/master_score_file.txt)
