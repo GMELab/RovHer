@@ -188,20 +188,19 @@ A directory of per-chromosome genotype matrices, each an `.RData` file containin
 
 ## Run the pipeline
 
-A copy of the wrapper script (below) to execute the four sequential scripts is found in: [Scripts/heritability_wrapper.sh](Scripts/heritability_wrapper.sh)
+A copy of the wrapper script (as described below) to execute the four sequential scripts is found in: [Scripts/heritability_wrapper.sh](Scripts/heritability_wrapper.sh)
 
+**Directory**:
+* `DIR_WORK` is the full path to the repository
 
-Directory:
-`DIR_WORK` is the full path to the repository
-
-Variables:
+**Variables**:
 * `anno_name` is the score column to rank by (default: `RovHer`) 
 * `prop_blks` is a list of comma-separated proportion bins (e.g. `1` for top 1% of RVs, or `100` for all RVs)
 * `trait` is the trait name (e.g. `LDL_direct`)
 * `sort` is how to sort list of variants; `descending` (higher score = more functional) or `ascending`
 * `mode` is the step 4 backend: `regular` (R) or `lmutils` (Rust) — default `regular`
 
-Prepared input files:
+**Prepared input files**:
 * `input_file` path to a list of approximately LD-independent variants (formatted as chr:pos:ref:alt) typically generated from the PLINK
    `--clump` function; no column header
 * `score_file` path to the master annotation file. Retrieve pre-computed RovHer annotations from: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15596103.svg)](https://doi.org/10.5281/zenodo.15596103)
