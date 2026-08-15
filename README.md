@@ -243,16 +243,10 @@ done
 ### Interpreting the output
 
 The final heritability estimate for each proportion bin is written to `h2_result/top<top>/4_<trait>_H2_RESULTS/TOTAL_H2_<trait>_exome.txt`
+`h2_result/top<top>/4_<trait>_H2_RESULTS/TOTAL_H2_<trait>_exome.txt`. Example: [sample/h2_result/top1/4_LDL_direct_H2_RESULTS/TOTAL_H2_LDL_direct_exome.txt](sample/h2_result/top1/4_LDL_direct_H2_RESULTS/TOTAL_H2_LDL_direct_exome.txt)
 
-| Column | Meaning |
-|--------|---------|
-| `TRAIT` | Trait name |
-| `N` | Mean number of participants across blocks |
-| `N_RVs` | Total number of rare variants included |
-| `ADJ_R2` | **Total heritability estimate** (sum of block adjusted R²) |
-| `STD2` | Aggregated standard deviation (√ of summed block variances) |
-| `LCL_adj` | Lower 95% CI (ADJ_R2 − 1.96 × STD2) |
-| `UCL_adj` | Upper 95% CI (ADJ_R2 + 1.96 × STD2) |
+(columns: `TRAIT`, `N`, `N_RVs`, `ADJ_R2` = heritability, `STD2`, `LCL_adj`, `UCL_adj` = 95% CI).
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
